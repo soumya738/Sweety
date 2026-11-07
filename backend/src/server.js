@@ -6,6 +6,7 @@ import {connectDB,disconnectDB} from "./config/db.js";
 //Import Routes
 import readingsroute from "./routes/readingsRoutes.js";
 import registerRoute from "./routes/authRoutes.js";
+import reportRoute from "./routes/reportRoutes.js";
 
 config();
 connectDB();
@@ -19,6 +20,7 @@ app.use(cookieParser());
 //API Routes
 app.use("/readings", readingsroute)
 app.use("/auth", registerRoute)
+app.use("/report", reportRoute)
  
 const PORT = 5001;
 const server = app.listen(PORT, () => {

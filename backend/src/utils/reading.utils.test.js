@@ -101,3 +101,62 @@ test("maintains the correct slot order", () => {
     ]
   );
 });
+
+import { computeStats } from "./reading.utils.js";
+
+// ─── computeStats ─────────────────────────────────────────────────────────────
+
+test("returns null stats for an empty readings array", () => {
+  assert.deepEqual(computeStats([]), {
+    count: 0,
+    highest: null,
+    lowest: null,
+    average: null,
+  });
+});
+
+test("computes correct stats for a single reading", () => {
+  assert.deepEqual(computeStats([{ value: 100 }]), {
+    count: 1,
+    highest: 100,
+    lowest: 100,
+    average: 100,
+  });
+});
+
+test("computes correct stats for multiple readings", () => {
+  const readings = [
+    { value: 84 },
+    { value: 142 },
+    { value: 100 },
+  ];
+  assert.deepEqual(computeStats(readings), {
+    count: 3,
+    highest: 142,
+    lowest: 84,
+    average: 108.7,
+  });
+});
+
+test("rounds average to 1 decimal place", () => {
+  // 84 + 85 + 86 = 255 / 3 = 85.0 exactly
+  assert.equal(computeStats([{ value: 84 }, { value: 85 }, { value: 86 }]).average, 85);
+
+  // 100 + 101 = 201 / 2 = 100.5
+  assert.equal(computeStats([{ value: 100 }, { value: 101 }]).average, 100.5);
+
+  // 40 + 600 + 123 = 763 / 3 = 254.333... → rounds to 254.3
+  assert.equal(computeStats([{ value: 40 }, { value: 600 }, { value: 123 }]).average, 254.3);
+});
+
+test("handles boundary glucose values (40 and 600)", () => {
+  const result = computeStats([{ value: 40 }, { value: 600 }]);
+  assert.equal(result.highest, 600);
+  assert.equal(result.lowest, 40);
+  assert.equal(result.average, 320);
+});
+
+test("count matches number of readings passed in", () => {
+  const readings = Array.from({ length: 4 }, (_, i) => ({ value: 100 + i }));
+  assert.equal(computeStats(readings).count, 4);
+});

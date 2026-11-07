@@ -77,3 +77,20 @@ export function formatReading(reading) {
 export function isUniqueConstraintError(error) {
   return error?.code === "P2002";
 }
+
+/**
+ * Computes summary stats from an array of reading objects.
+ * Returns null fields when there are no readings (empty state).
+ */
+export function computeStats(readings) {
+  if (!readings.length) {
+    return { count: 0, highest: null, lowest: null, average: null };
+  }
+
+  const values = readings.map((r) => r.value);
+  const highest = Math.max(...values);
+  const lowest  = Math.min(...values);
+  const average = Math.round((values.reduce((a, b) => a + b, 0) / values.length) * 10) / 10;
+
+  return { count: readings.length, highest, lowest, average };
+}
