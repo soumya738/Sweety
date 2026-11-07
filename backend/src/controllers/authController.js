@@ -85,4 +85,14 @@ const logout = async (req, res) => {
     });
 };
 
-export { register, login, logout };
+// GET /auth/me — returns the current user from the JWT cookie
+// Used by the frontend to restore session on page refresh
+const me = async (req, res) => {
+    // req.user is attached by the protect middleware
+    res.status(200).json({
+        status: "success",
+        data: { user: req.user },
+    });
+};
+
+export { register, login, logout, me };

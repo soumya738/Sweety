@@ -1,0 +1,69 @@
+/* ── CSS Variables ─────────────────────────────────────────────────────────── */
+:root {
+  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+
+  /* Brand */
+  --accent:        #e85d8a;
+  --accent-dark:   #c94878;
+  --accent-light:  #fde8f0;
+
+  /* Neutrals */
+  --bg:            #f8f9fb;
+  --surface:       #ffffff;
+  --border:        #e4e6ea;
+  --text:          #374151;
+  --text-muted:    #6b7280;
+  --text-heading:  #111827;
+
+  /* Semantic */
+  --success:       #16a34a;
+  --success-light: #dcfce7;
+  --danger:        #dc2626;
+  --danger-light:  #fee2e2;
+  --warning:       #d97706;
+  --warning-light: #fef3c7;
+
+  /* Slots */
+  --slot-1: #6366f1;   /* Morning fasting  */
+  --slot-2: #f59e0b;   /* After breakfast  */
+  --slot-3: #10b981;   /* After lunch      */
+  --slot-4: #8b5cf6;   /* After dinner     */
+
+  /* Misc */
+  --radius:  10px;
+  --shadow:  0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.10);
+
+  font: 16px/1.5 var(--sans);
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Reset ─────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body { min-height: 100svh; }
+
+#root {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3 {
+  color: var(--text-heading);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+button { cursor: pointer; font-family: inherit; }
+
+input, select, textarea {
+  font-family: inherit;
+  font-size: 1rem;
+}
