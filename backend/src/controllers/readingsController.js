@@ -11,6 +11,7 @@ import {
   isFutureDate,
   formatReading,
   isUniqueConstraintError,
+  isSlotInFuture,
 } from "../utils/reading.utils.js";
 
 const READING_SELECT = {
@@ -55,6 +56,15 @@ const addToReadings = async (req, res) => {
 
     if (isFutureDate(date)) {
       return errorResponse(res, 400, "Date cannot be in the future.");
+    }
+
+    // Block future slots on today's date (e.g. After dinner at 1pm)
+    if (isSlotInFuture(readingDate, slot)) {
+      return errorResponse(
+        res,
+        400,
+        `It's too early to log a ${SLOT_DISPLAY[slot]} reading. Please wait until the correct time of day.`
+      );
     }
 
     const where = { userId, readingDate: date };

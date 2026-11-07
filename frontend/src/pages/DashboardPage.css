@@ -1,0 +1,203 @@
+/* Layout */
+.dashboard-layout {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+}
+
+.dashboard-main {
+    flex: 1;
+    max-width: 640px;
+    width: 100%;
+    margin: 32px auto;
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Generic card shell */
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+}
+
+/* ── Date navigator ─────────────────────────────────────────────────────────── */
+.date-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.date-nav-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+}
+
+.date-nav-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-heading);
+}
+
+.date-nav-today {
+    font-size: 0.75rem;
+    padding: 2px 10px;
+    border: 1px solid var(--accent);
+    border-radius: 20px;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.date-nav-today:hover {
+    background: var(--accent);
+    color: #fff;
+}
+
+.date-nav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: none;
+    color: var(--text-muted);
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+}
+
+.date-nav-btn:hover:not(:disabled) {
+    background: var(--bg);
+    color: var(--text-heading);
+}
+
+.date-nav-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+/* ── Readings section ───────────────────────────────────────────────────────── */
+.readings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.readings-title {
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.readings-count {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1px 8px;
+}
+
+/* Add button */
+.btn-add {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 14px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: background 0.15s;
+}
+
+.btn-add:hover { background: var(--accent-dark); }
+
+/* Readings list */
+.readings-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Form panel (add / edit inline) */
+.form-panel {
+    position: relative;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 12px;
+}
+
+.form-panel-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: none;
+    color: var(--text-muted);
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s;
+}
+
+.form-panel-close:hover {
+    background: var(--border);
+    color: var(--text-heading);
+}
+
+/* Placeholder states */
+.readings-placeholder {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    padding: 24px 0;
+}
+
+.readings-error {
+    background: var(--danger-light);
+    color: var(--danger);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.875rem;
+    margin-bottom: 12px;
+}
+
+.readings-empty {
+    text-align: center;
+    padding: 32px 0 16px;
+    color: var(--text-muted);
+}
+
+.readings-empty-icon { font-size: 2rem; display: block; margin-bottom: 8px; }
+.readings-empty p { font-size: 0.95rem; }
+.readings-empty-sub { font-size: 0.82rem; margin-top: 4px; }
+
+/* Responsive */
+@media (max-width: 480px) {
+    .dashboard-main { margin: 16px auto; }
+    .card { padding: 16px; }
+}

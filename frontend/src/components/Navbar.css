@@ -1,0 +1,92 @@
+.navbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 24px;
+    height: 60px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+/* Brand */
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    margin-right: 8px;
+}
+
+.navbar-brand-icon { font-size: 1.3rem; }
+
+.navbar-brand-name {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+/* Links */
+.navbar-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+}
+
+.navbar-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 7px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
+}
+
+.navbar-link:hover { background: var(--bg); color: var(--text); text-decoration: none; }
+.navbar-link.active { background: var(--accent-light); color: var(--accent); }
+
+/* User area */
+.navbar-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+}
+
+.navbar-username {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.navbar-logout {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.navbar-logout:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+    background: var(--danger-light);
+}
+
+/* Mobile — hide username text, keep icon */
+@media (max-width: 480px) {
+    .navbar-username { display: none; }
+    .navbar-logout span { display: none; }
+    .navbar { padding: 0 16px; }
+}

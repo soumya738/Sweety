@@ -79,6 +79,33 @@ export function isUniqueConstraintError(error) {
 }
 
 /**
+ * The earliest local hour at which each slot is considered "reachable".
+ * Used to block adding a future slot on today's date.
+ * Past dates are never restricted.
+ */
+export const SLOT_START_HOUR = {
+  BEFOREBREAKFAST: 0,   // midnight onwards
+  AFTERBREAKFAST:  8,   // 08:00 onwards
+  AFTERLUNCH:      12,  // 12:00 onwards
+  AFTERDINNER:     17,  // 17:00 onwards
+};
+
+/**
+ * Returns true when `slot` is still in the future for today's local time.
+ * Always returns false for past dates (backlog entries are always allowed).
+ *
+ * @param {string} readingDateStr  "YYYY-MM-DD"
+ * @param {string} slot            e.g. "AFTERDINNER"
+ */
+export function isSlotInFuture(readingDateStr, slot) {
+  const todayStr = new Date().toLocaleDateString("en-CA"); // "YYYY-MM-DD" local
+  if (readingDateStr !== todayStr) return false;           // past date → always ok
+
+  const currentHour = new Date().getHours(); // local hour 0–23
+  return currentHour < SLOT_START_HOUR[slot];
+}
+
+/**
  * Computes summary stats from an array of reading objects.
  * Returns null fields when there are no readings (empty state).
  */

@@ -1,0 +1,98 @@
+.reading-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    gap: 12px;
+    border-left-width: 4px;
+}
+
+/* Slot accent colours via left border */
+.reading-card.slot-1 { border-left-color: var(--slot-1); }
+.reading-card.slot-2 { border-left-color: var(--slot-2); }
+.reading-card.slot-3 { border-left-color: var(--slot-3); }
+.reading-card.slot-4 { border-left-color: var(--slot-4); }
+
+/* Left side */
+.rc-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+
+.rc-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: currentColor;
+}
+
+.slot-1 .rc-dot { color: var(--slot-1); }
+.slot-2 .rc-dot { color: var(--slot-2); }
+.slot-3 .rc-dot { color: var(--slot-3); }
+.slot-4 .rc-dot { color: var(--slot-4); }
+
+.rc-slot {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text);
+}
+
+/* Right side */
+.rc-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.rc-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-heading);
+}
+
+.rc-unit {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--text-muted);
+}
+
+/* Action buttons */
+.rc-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.rc-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: none;
+    color: var(--text-muted);
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.rc-btn.edit:hover {
+    background: #eff6ff;
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+.rc-btn.delete:hover:not(:disabled) {
+    background: var(--danger-light);
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.rc-btn:disabled { opacity: 0.5; cursor: not-allowed; }

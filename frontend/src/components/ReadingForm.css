@@ -1,0 +1,150 @@
+.reading-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.reading-form-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-heading);
+    margin-bottom: 4px;
+}
+
+/* Field wrapper */
+.rf-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.rf-field label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.rf-unit {
+    font-weight: 400;
+    color: var(--text-muted);
+}
+
+.rf-field input[type="number"],
+.rf-field input[type="text"] {
+    padding: 9px 13px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: var(--text-heading);
+    background: var(--bg);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.rf-field input[type="number"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(232, 93, 138, 0.15);
+}
+
+.rf-readonly {
+    color: var(--text-muted) !important;
+    cursor: default !important;
+}
+
+/* Slot grid */
+.rf-slot-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.rf-slot-btn {
+    padding: 9px 8px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-align: center;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.rf-slot-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-light);
+}
+
+.rf-slot-btn.selected {
+    border-color: var(--accent);
+    background: var(--accent-light);
+    color: var(--accent);
+    font-weight: 600;
+}
+
+/* Future slot — greyed out, not clickable */
+.rf-slot-btn.future {
+    opacity: 0.45;
+    cursor: not-allowed;
+    border-style: dashed;
+}
+
+.rf-slot-future-tag {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.rf-all-taken {
+    grid-column: 1 / -1;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 8px 0;
+}
+
+/* Error */
+.rf-error {
+    background: var(--danger-light);
+    color: var(--danger);
+    border: 1px solid rgba(220, 38, 38, 0.25);
+    border-radius: 8px;
+    padding: 9px 13px;
+    font-size: 0.85rem;
+}
+
+/* Actions */
+.rf-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.rf-btn-cancel {
+    padding: 9px 18px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: none;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    transition: background 0.15s;
+}
+
+.rf-btn-cancel:hover:not(:disabled) { background: var(--bg); }
+
+.rf-btn-submit {
+    padding: 9px 18px;
+    border: none;
+    border-radius: 8px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: background 0.15s, opacity 0.15s;
+}
+
+.rf-btn-submit:hover:not(:disabled) { background: var(--accent-dark); }
+.rf-btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
