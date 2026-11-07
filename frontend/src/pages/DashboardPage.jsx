@@ -3,6 +3,8 @@ import { ChevronLeft, ChevronRight, Plus, X } from "lucide-react";
 import Navbar from "../components/Navbar";
 import ReadingCard from "../components/ReadingCard";
 import ReadingForm from "../components/ReadingForm";
+import ConfirmDialog from "../components/ConfirmDialog";
+import { useAuth } from "../context/AuthContext";
 import api from "../api/axios";
 import "./DashboardPage.css";
 
@@ -24,6 +26,8 @@ function isToday(dateStr) {
 
 /* ── component ────────────────────────────────────────────────────────────────── */
 export default function DashboardPage() {
+    const { user } = useAuth();
+    const firstName = user?.name?.split(" ")[0] ?? "";
     const [selectedDate, setSelectedDate] = useState(toDateStr(new Date()));
     const [readings,     setReadings]     = useState([]);
     const [loadingData,  setLoadingData]  = useState(false);
@@ -34,10 +38,11 @@ export default function DashboardPage() {
     const [formBusy,  setFormBusy]  = useState(false);
     const [formError, setFormError] = useState("");
 
-    // Which reading id is currently being deleted
-    const [deletingId, setDeletingId] = useState(null);
+    // Delete confirmation dialog
+    const [confirmDelete, setConfirmDelete] = useState(null); // null | { id, slotDisplay }
+    const [deletingId,    setDeletingId]    = useState(null);
 
-    // ── Fetch readings for the selected date ───────────────────────────────
+    // ── Fetch readings ─────────────────────────────────────────────────────
     const fetchReadings = useCallback(async (date) => {
         setLoadingData(true);
         setFetchError("");
@@ -53,7 +58,6 @@ export default function DashboardPage() {
 
     useEffect(() => {
         fetchReadings(selectedDate);
-        // Close any open form when date changes
         setFormMode(null);
         setFormError("");
     }, [selectedDate, fetchReadings]);
@@ -62,7 +66,6 @@ export default function DashboardPage() {
     function shiftDate(days) {
         const [y, m, d] = selectedDate.split("-").map(Number);
         const next = new Date(y, m - 1, d + days);
-        // Don't allow navigating into the future
         if (next > new Date()) return;
         setSelectedDate(toDateStr(next));
     }
@@ -77,7 +80,6 @@ export default function DashboardPage() {
             const res = await api.post("/readings", data);
             setReadings((prev) => {
                 const next = [...prev, res.data.data.reading];
-                // Keep meal order
                 const ORDER = {
                     BEFOREBREAKFAST: 1, AFTERBREAKFAST: 2,
                     AFTERLUNCH: 3,      AFTERDINNER: 4,
@@ -86,9 +88,7 @@ export default function DashboardPage() {
             });
             setFormMode(null);
         } catch (err) {
-            setFormError(
-                err?.response?.data?.error || "Failed to add reading."
-            );
+            setFormError(err?.response?.data?.error || "Failed to add reading.");
         } finally {
             setFormBusy(false);
         }
@@ -101,45 +101,75 @@ export default function DashboardPage() {
         try {
             const res = await api.put(`/readings/${formMode.id}`, { value: data.value });
             setReadings((prev) =>
-                prev.map((r) =>
-                    r.id === formMode.id ? res.data.data.reading : r
-                )
+                prev.map((r) => r.id === formMode.id ? res.data.data.reading : r)
             );
             setFormMode(null);
         } catch (err) {
-            setFormError(
-                err?.response?.data?.error || "Failed to update reading."
-            );
+            setFormError(err?.response?.data?.error || "Failed to update reading.");
         } finally {
             setFormBusy(false);
         }
     }
 
-    // ── Delete reading ─────────────────────────────────────────────────────
-    async function handleDelete(id) {
-        if (!window.confirm("Delete this reading?")) return;
+    // ── Delete reading — open dialog ───────────────────────────────────────
+    function requestDelete(reading) {
+        setConfirmDelete({ id: reading.id, slotDisplay: reading.slotDisplay });
+    }
+
+    async function confirmDeleteReading() {
+        const id = confirmDelete.id;
+        setConfirmDelete(null);
         setDeletingId(id);
         try {
             await api.delete(`/readings/${id}`);
             setReadings((prev) => prev.filter((r) => r.id !== id));
-            // If we were editing the deleted reading, close the form
             if (formMode?.id === id) setFormMode(null);
         } catch {
-            alert("Failed to delete reading. Please try again.");
+            // surface error in a future toast; for now silently log
+            console.error("Delete failed");
         } finally {
             setDeletingId(null);
         }
     }
 
-    const takenSlots  = readings.map((r) => r.slot);
-    const canAddMore  = readings.length < 4;
-    const isFuture    = selectedDate > toDateStr(new Date());
+    const takenSlots = readings.map((r) => r.slot);
+    const canAddMore = readings.length < 4;
+    const isFuture   = selectedDate > toDateStr(new Date());
 
     return (
         <div className="dashboard-layout">
             <Navbar />
 
+            {/* ── Delete confirmation dialog ── */}
+            <ConfirmDialog
+                isOpen={Boolean(confirmDelete)}
+                title="Delete reading?"
+                message={
+                    confirmDelete
+                        ? `This will permanently remove your ${confirmDelete.slotDisplay} reading for ${selectedDate}.`
+                        : ""
+                }
+                confirmLabel="Delete"
+                cancelLabel="Keep it"
+                variant="danger"
+                onConfirm={confirmDeleteReading}
+                onCancel={() => setConfirmDelete(null)}
+            />
+
             <main className="dashboard-main">
+                {/* ── Greeting banner ── */}
+                <section className="greeting-banner">
+                    <div className="greeting-text">
+                        <h1 className="greeting-heading">
+                            Welcome, {firstName}! 👋
+                        </h1>
+                        <p className="greeting-sub">
+                            Hope you're doing well today. Below you can see your blood glucose readings and keep your health on track.
+                        </p>
+                    </div>
+                    <span className="greeting-emoji" aria-hidden="true">🩸</span>
+                </section>
+
                 {/* ── Date navigator ── */}
                 <section className="date-nav card">
                     <button
@@ -155,11 +185,7 @@ export default function DashboardPage() {
                             {formatDisplayDate(selectedDate)}
                         </span>
                         {!isToday(selectedDate) && (
-                            <button
-                                className="date-nav-today"
-                                onClick={goToday}
-                                type="button"
-                            >
+                            <button className="date-nav-today" onClick={goToday} type="button">
                                 Today
                             </button>
                         )}
@@ -180,18 +206,13 @@ export default function DashboardPage() {
                     <div className="readings-header">
                         <h2 className="readings-title">
                             Readings
-                            <span className="readings-count">
-                                {readings.length}/4
-                            </span>
+                            <span className="readings-count">{readings.length}/4</span>
                         </h2>
 
                         {canAddMore && !isFuture && formMode !== "add" && (
                             <button
                                 className="btn-add"
-                                onClick={() => {
-                                    setFormMode("add");
-                                    setFormError("");
-                                }}
+                                onClick={() => { setFormMode("add"); setFormError(""); }}
                             >
                                 <Plus size={16} />
                                 Add
@@ -220,17 +241,9 @@ export default function DashboardPage() {
                         </div>
                     )}
 
-                    {/* Loading */}
-                    {loadingData && (
-                        <p className="readings-placeholder">Loading…</p>
-                    )}
+                    {loadingData && <p className="readings-placeholder">Loading…</p>}
+                    {fetchError  && <p className="readings-error" role="alert">{fetchError}</p>}
 
-                    {/* Fetch error */}
-                    {fetchError && (
-                        <p className="readings-error" role="alert">{fetchError}</p>
-                    )}
-
-                    {/* Empty state */}
                     {!loadingData && !fetchError && readings.length === 0 && (
                         <div className="readings-empty">
                             <span className="readings-empty-icon">📋</span>
@@ -243,11 +256,9 @@ export default function DashboardPage() {
                         </div>
                     )}
 
-                    {/* Reading cards */}
                     <ul className="readings-list" aria-label="Readings">
                         {readings.map((r) => (
                             <li key={r.id}>
-                                {/* Edit form inline under the card */}
                                 {formMode?.id === r.id ? (
                                     <div className="form-panel">
                                         <button
@@ -269,11 +280,8 @@ export default function DashboardPage() {
                                 ) : (
                                     <ReadingCard
                                         reading={r}
-                                        onEdit={() => {
-                                            setFormMode(r);
-                                            setFormError("");
-                                        }}
-                                        onDelete={() => handleDelete(r.id)}
+                                        onEdit={() => { setFormMode(r); setFormError(""); }}
+                                        onDelete={() => requestDelete(r)}
                                         deleting={deletingId === r.id}
                                     />
                                 )}

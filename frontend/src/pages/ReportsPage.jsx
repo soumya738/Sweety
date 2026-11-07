@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import StatsCard from "../components/StatsCard";
+import DatePicker from "../components/DatePicker";
+import MonthPicker from "../components/MonthPicker";
 import api from "../api/axios";
 import "./ReportsPage.css";
 
@@ -101,7 +103,19 @@ export default function ReportsPage() {
             <Navbar />
 
             <main className="reports-main">
-                <h1 className="reports-heading">Reports</h1>
+                {/* ── Page description banner ── */}
+                <section className="reports-banner">
+                    <div className="reports-banner-text">
+                        <h1 className="reports-banner-heading">📊 Reports</h1>
+                        <p className="reports-banner-sub">
+                            Analyse your glucose trends over time. Pick a report type below —
+                            <strong> Daily</strong> shows all readings for one day,
+                            <strong> Month-to-date</strong> covers from the 1st to a selected date, and
+                            <strong> Monthly</strong> summarises an entire month.
+                            Each report shows your highest, lowest and average reading.
+                        </p>
+                    </div>
+                </section>
 
                 {/* ── Tab bar ── */}
                 <div className="reports-tabs" role="tablist">
@@ -121,27 +135,19 @@ export default function ReportsPage() {
                 {/* ── Filters ── */}
                 <div className="reports-filter card">
                     {activeTab === "monthly" ? (
-                        <label className="filter-label">
-                            Month
-                            <input
-                                type="month"
-                                value={selectedMonth}
-                                max={toMonthStr(new Date())}
-                                onChange={(e) => setSelectedMonth(e.target.value)}
-                                className="filter-input"
-                            />
-                        </label>
+                        <MonthPicker
+                            label="Month"
+                            value={selectedMonth}
+                            max={toMonthStr(new Date())}
+                            onChange={setSelectedMonth}
+                        />
                     ) : (
-                        <label className="filter-label">
-                            Date
-                            <input
-                                type="date"
-                                value={selectedDate}
-                                max={toDateStr(new Date())}
-                                onChange={(e) => setSelectedDate(e.target.value)}
-                                className="filter-input"
-                            />
-                        </label>
+                        <DatePicker
+                            label="Date"
+                            value={selectedDate}
+                            max={toDateStr(new Date())}
+                            onChange={setSelectedDate}
+                        />
                     )}
 
                     {/* Show resolved date range once loaded */}

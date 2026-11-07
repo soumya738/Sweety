@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import "./AuthPage.css";
 
@@ -23,9 +22,8 @@ function Field({ label, id, type = "text", value, onChange, autoComplete }) {
 /* ── main page ─────────────────────────────────────────────────────────────── */
 export default function AuthPage() {
     const { login, register } = useAuth();
-    const navigate = useNavigate();
 
-    const [mode, setMode]         = useState("login");   // "login" | "register"
+    const [mode, setMode]         = useState("login");
     const [name, setName]         = useState("");
     const [email, setEmail]       = useState("");
     const [password, setPassword] = useState("");
@@ -58,9 +56,9 @@ export default function AuthPage() {
                 }
                 await register(name.trim(), email, password);
             }
-            navigate("/dashboard", { replace: true });
+            // AuthContext sets welcome state → AppShell renders WelcomeScreen
+            // WelcomeScreen onDismiss → dismissWelcome() → normal routing resumes
         } catch (err) {
-            // Prefer the backend error message when available
             setError(
                 err?.response?.data?.error ||
                 "Something went wrong. Please try again."
@@ -74,14 +72,14 @@ export default function AuthPage() {
         <div className="auth-page">
             <div className="auth-card">
 
-                {/* ── Brand header ── */}
+                {/* Brand header */}
                 <div className="auth-brand">
                     <span className="auth-brand-icon">🩸</span>
                     <h1 className="auth-brand-name">Sweety</h1>
                     <p className="auth-brand-tagline">Blood Glucose Tracker</p>
                 </div>
 
-                {/* ── Mode toggle tabs ── */}
+                {/* Mode toggle tabs */}
                 <div className="auth-tabs" role="tablist">
                     <button
                         role="tab"
@@ -103,7 +101,7 @@ export default function AuthPage() {
                     </button>
                 </div>
 
-                {/* ── Form ── */}
+                {/* Form */}
                 <form className="auth-form" onSubmit={handleSubmit} noValidate>
                     {!isLogin && (
                         <Field
@@ -133,11 +131,8 @@ export default function AuthPage() {
                         autoComplete={isLogin ? "current-password" : "new-password"}
                     />
 
-                    {/* ── Error banner ── */}
                     {error && (
-                        <p className="auth-error" role="alert">
-                            {error}
-                        </p>
+                        <p className="auth-error" role="alert">{error}</p>
                     )}
 
                     <button
@@ -151,7 +146,7 @@ export default function AuthPage() {
                     </button>
                 </form>
 
-                {/* ── Switch mode link ── */}
+                {/* Switch mode */}
                 <p className="auth-switch">
                     {isLogin ? "Don't have an account? " : "Already have an account? "}
                     <button

@@ -1,0 +1,37 @@
+.loading-screen {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    background: var(--bg);
+}
+
+.loading-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.loading-icon { font-size: 2rem; }
+
+.loading-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+/* CSS-only spinner — no extra libraries */
+.loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--accent-light);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

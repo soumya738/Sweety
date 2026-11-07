@@ -1,0 +1,210 @@
+/* ── Wrapper ────────────────────────────────────────────────────────────────── */
+.dp-wrapper {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.dp-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text);
+}
+
+/* ── Trigger button ─────────────────────────────────────────────────────────── */
+.dp-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: var(--text-heading);
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.dp-trigger:hover,
+.dp-trigger[aria-expanded="true"] {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(232, 93, 138, 0.12);
+}
+
+.dp-icon { color: var(--accent); flex-shrink: 0; }
+
+/* ── Popover ────────────────────────────────────────────────────────────────── */
+.dp-popover {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 200;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    padding: 14px;
+    width: 260px;
+    animation: dpFadeIn 0.12s ease;
+}
+
+@keyframes dpFadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────────── */
+.dp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.dp-month-label {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-heading);
+}
+
+.dp-nav-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: none;
+    color: var(--text-muted);
+    transition: background 0.12s, color 0.12s;
+}
+
+.dp-nav-btn:hover:not(:disabled) {
+    background: var(--accent-light);
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.dp-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* ── Day grid ───────────────────────────────────────────────────────────────── */
+.dp-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+}
+
+.dp-dow {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 3px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.dp-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 6px;
+    background: none;
+    font-size: 0.8rem;
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.1s, color 0.1s;
+}
+
+.dp-day:hover:not(.blocked):not(.selected) {
+    background: var(--accent-light);
+    color: var(--accent);
+}
+
+.dp-day.today {
+    font-weight: 700;
+    color: var(--accent);
+    outline: 1.5px solid var(--accent);
+    outline-offset: -1px;
+}
+
+.dp-day.selected {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+}
+
+.dp-day.blocked {
+    color: var(--border);
+    cursor: not-allowed;
+}
+
+/* Today shortcut */
+.dp-today-btn {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 6px 0;
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+    transition: background 0.12s;
+}
+
+.dp-today-btn:hover { background: var(--accent); color: #fff; }
+
+/* ── Month picker variant ───────────────────────────────────────────────────── */
+.dp-month-popover { width: 230px; }
+
+.dp-month-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+}
+
+.dp-month-cell {
+    padding: 9px 4px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    background: none;
+    font-size: 0.82rem;
+    color: var(--text);
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.1s, color 0.1s, border-color 0.1s;
+}
+
+.dp-month-cell:hover:not(.blocked):not(.selected) {
+    background: var(--accent-light);
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.dp-month-cell.today {
+    font-weight: 700;
+    color: var(--accent);
+    outline: 1.5px solid var(--accent);
+    outline-offset: -1px;
+}
+
+.dp-month-cell.selected {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+}
+
+.dp-month-cell.blocked {
+    color: var(--border);
+    cursor: not-allowed;
+}

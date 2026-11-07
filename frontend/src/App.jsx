@@ -1,38 +1,22 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
 import AuthPage from "./pages/AuthPage";
 import DashboardPage from "./pages/DashboardPage";
 import ReportsPage from "./pages/ReportsPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 export default function App() {
     return (
         <BrowserRouter>
             <AuthProvider>
                 <Routes>
-                    {/* Public */}
-                    <Route path="/auth" element={<AuthPage />} />
-
-                    {/* Protected */}
-                    <Route
-                        path="/dashboard"
-                        element={
-                            <ProtectedRoute>
-                                <DashboardPage />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/reports"
-                        element={
-                            <ProtectedRoute>
-                                <ReportsPage />
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    {/* Fallback — redirect root to dashboard */}
-                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                    <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+                    <Route path="/auth" element={<PublicRoute><AuthPage /></PublicRoute>} />
+                    <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+                    <Route path="/reports" element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />
+                    <Route path="*" element={<NotFoundPage />} />
                 </Routes>
             </AuthProvider>
         </BrowserRouter>

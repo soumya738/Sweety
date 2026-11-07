@@ -3,41 +3,60 @@ import api from "../api/axios";
 
 const AuthContext = createContext(null);
 
-/**
- * Provides { user, loading, login, register, logout } to the whole tree.
- *
- * `user`    – the logged-in user object { id, name, email } or null
- * `loading` – true while we're checking the session on first mount
- */
+// ── localStorage cache ────────────────────────────────────────────────────────
+// Stores { id, name, email } so the greeting is available on the very first
+// render without waiting for the /auth/me network call.
+const CACHE_KEY = "sweety_user";
+
+function readCache() {
+    try { return JSON.parse(localStorage.getItem(CACHE_KEY)) ?? null; }
+    catch { return null; }
+}
+
+function writeCache(u) {
+    if (u) localStorage.setItem(CACHE_KEY, JSON.stringify({ id: u.id, name: u.name, email: u.email }));
+    else   localStorage.removeItem(CACHE_KEY);
+}
+
 export function AuthProvider({ children }) {
-    const [user, setUser]       = useState(null);
+    // Seed state from cache synchronously — no flicker on first render
+    const [user,    setUser]    = useState(() => readCache());
     const [loading, setLoading] = useState(true);
 
-    // ── Check existing session on first load ───────────────────────────────
-    // If the httpOnly cookie is still valid, /auth/me returns the user.
-    // This keeps the user logged in across page refreshes.
+    // Verify session on mount. Clears cache if cookie is gone.
     useEffect(() => {
         api.get("/auth/me")
-            .then((res) => setUser(res.data.data.user))
-            .catch(() => setUser(null))
+            .then((res) => {
+                const u = res.data.data.user;
+                writeCache(u);
+                setUser(u);
+            })
+            .catch(() => {
+                writeCache(null);
+                setUser(null);
+            })
             .finally(() => setLoading(false));
     }, []);
 
-    // ── Auth actions ───────────────────────────────────────────────────────
     const login = useCallback(async (email, password) => {
         const res = await api.post("/auth/login", { email, password });
-        setUser(res.data.data.user);
-        return res.data.data.user;
+        const u = res.data.data.user;
+        writeCache(u);   // write cache BEFORE setUser so next render reads it
+        setUser(u);
+        return u;
     }, []);
 
     const register = useCallback(async (name, email, password) => {
         const res = await api.post("/auth/register", { name, email, password });
-        setUser(res.data.data.user);
-        return res.data.data.user;
+        const u = res.data.data.user;
+        writeCache(u);
+        setUser(u);
+        return u;
     }, []);
 
     const logout = useCallback(async () => {
         await api.post("/auth/logout");
+        writeCache(null);
         setUser(null);
     }, []);
 
@@ -48,7 +67,6 @@ export function AuthProvider({ children }) {
     );
 }
 
-/** Convenience hook — use this in any component instead of useContext directly. */
 export function useAuth() {
     const ctx = useContext(AuthContext);
     if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");

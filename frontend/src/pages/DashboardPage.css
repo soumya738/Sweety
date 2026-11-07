@@ -26,6 +26,54 @@
     padding: 20px;
 }
 
+/* ── Greeting banner ────────────────────────────────────────────────────────── */
+.greeting-banner {
+    background: linear-gradient(135deg, #fde8f0 0%, #fff5f8 100%);
+    border: 1px solid rgba(232, 93, 138, 0.2);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.greeting-text { flex: 1; }
+
+.greeting-heading {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-heading);
+    margin-bottom: 4px;
+    min-height: 1.5em;  /* prevents layout jump while loading */
+}
+
+.greeting-placeholder {
+    display: inline-block;
+    width: 200px;
+    height: 1em;
+    border-radius: 4px;
+    background: rgba(232, 93, 138, 0.1);
+    animation: shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0%, 100% { opacity: 0.5; }
+    50%       { opacity: 1;   }
+}
+
+.greeting-sub {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.greeting-emoji {
+    font-size: 2.4rem;
+    flex-shrink: 0;
+    opacity: 0.85;
+}
+
 /* ── Date navigator ─────────────────────────────────────────────────────────── */
 .date-nav {
     display: flex;

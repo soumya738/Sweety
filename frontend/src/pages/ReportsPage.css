@@ -17,10 +17,30 @@
     gap: 20px;
 }
 
-.reports-heading {
-    font-size: 1.5rem;
+/* ── Page description banner ────────────────────────────────────────────────── */
+.reports-banner {
+    background: linear-gradient(135deg, #eef2ff 0%, #f8f9ff 100%);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+}
+
+.reports-banner-heading {
+    font-size: 1.2rem;
     font-weight: 700;
     color: var(--text-heading);
+    margin-bottom: 6px;
+}
+
+.reports-banner-sub {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.reports-banner-sub strong {
+    color: var(--text);
+    font-weight: 600;
 }
 
 /* ── Tabs ───────────────────────────────────────────────────────────────────── */

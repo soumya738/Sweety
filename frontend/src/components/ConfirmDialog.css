@@ -1,0 +1,94 @@
+/* Backdrop */
+.dialog-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 16px;
+    animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Panel */
+.dialog-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    padding: 28px 28px 24px;
+    width: 100%;
+    max-width: 400px;
+    animation: slideUp 0.15s ease;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(12px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* Danger variant — red top border */
+.dialog-danger { border-top: 4px solid var(--danger); }
+.dialog-warning { border-top: 4px solid var(--warning); }
+.dialog-default { border-top: 4px solid var(--accent); }
+
+/* Title */
+.dialog-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-heading);
+    margin-bottom: 8px;
+}
+
+/* Message */
+.dialog-message {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 24px;
+}
+
+/* Actions */
+.dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.dialog-btn-cancel {
+    padding: 9px 18px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: none;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    transition: background 0.15s;
+}
+
+.dialog-btn-cancel:hover { background: var(--bg); }
+
+/* Confirm variants */
+.dialog-btn-confirm {
+    padding: 9px 18px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #fff;
+    transition: background 0.15s;
+}
+
+.dialog-btn-danger  { background: var(--danger);  }
+.dialog-btn-warning { background: var(--warning); }
+.dialog-btn-default { background: var(--accent);  }
+
+.dialog-btn-danger:hover  { background: #b91c1c; }
+.dialog-btn-warning:hover { background: #b45309; }
+.dialog-btn-default:hover { background: var(--accent-dark); }
