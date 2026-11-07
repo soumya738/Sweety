@@ -1,4 +1,168 @@
-// Step 2 — implemented next
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import "./AuthPage.css";
+
+/* ── small reusable field ──────────────────────────────────────────────────── */
+function Field({ label, id, type = "text", value, onChange, autoComplete }) {
+    return (
+        <div className="auth-field">
+            <label htmlFor={id}>{label}</label>
+            <input
+                id={id}
+                type={type}
+                value={value}
+                onChange={onChange}
+                autoComplete={autoComplete}
+                required
+            />
+        </div>
+    );
+}
+
+/* ── main page ─────────────────────────────────────────────────────────────── */
 export default function AuthPage() {
-    return <div>Auth Page — coming soon</div>;
+    const { login, register } = useAuth();
+    const navigate = useNavigate();
+
+    const [mode, setMode]         = useState("login");   // "login" | "register"
+    const [name, setName]         = useState("");
+    const [email, setEmail]       = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError]       = useState("");
+    const [busy, setBusy]         = useState(false);
+
+    const isLogin = mode === "login";
+
+    function switchMode() {
+        setMode(isLogin ? "register" : "login");
+        setError("");
+        setName("");
+        setEmail("");
+        setPassword("");
+    }
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        setError("");
+        setBusy(true);
+
+        try {
+            if (isLogin) {
+                await login(email, password);
+            } else {
+                if (name.trim().length < 2) {
+                    setError("Name must be at least 2 characters.");
+                    setBusy(false);
+                    return;
+                }
+                await register(name.trim(), email, password);
+            }
+            navigate("/dashboard", { replace: true });
+        } catch (err) {
+            // Prefer the backend error message when available
+            setError(
+                err?.response?.data?.error ||
+                "Something went wrong. Please try again."
+            );
+        } finally {
+            setBusy(false);
+        }
+    }
+
+    return (
+        <div className="auth-page">
+            <div className="auth-card">
+
+                {/* ── Brand header ── */}
+                <div className="auth-brand">
+                    <span className="auth-brand-icon">🩸</span>
+                    <h1 className="auth-brand-name">Sweety</h1>
+                    <p className="auth-brand-tagline">Blood Glucose Tracker</p>
+                </div>
+
+                {/* ── Mode toggle tabs ── */}
+                <div className="auth-tabs" role="tablist">
+                    <button
+                        role="tab"
+                        aria-selected={isLogin}
+                        className={isLogin ? "active" : ""}
+                        onClick={() => mode !== "login" && switchMode()}
+                        type="button"
+                    >
+                        Log in
+                    </button>
+                    <button
+                        role="tab"
+                        aria-selected={!isLogin}
+                        className={!isLogin ? "active" : ""}
+                        onClick={() => mode !== "register" && switchMode()}
+                        type="button"
+                    >
+                        Sign up
+                    </button>
+                </div>
+
+                {/* ── Form ── */}
+                <form className="auth-form" onSubmit={handleSubmit} noValidate>
+                    {!isLogin && (
+                        <Field
+                            label="Name"
+                            id="name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            autoComplete="name"
+                        />
+                    )}
+
+                    <Field
+                        label="Email"
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        autoComplete={isLogin ? "username" : "email"}
+                    />
+
+                    <Field
+                        label="Password"
+                        id="password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        autoComplete={isLogin ? "current-password" : "new-password"}
+                    />
+
+                    {/* ── Error banner ── */}
+                    {error && (
+                        <p className="auth-error" role="alert">
+                            {error}
+                        </p>
+                    )}
+
+                    <button
+                        className="auth-submit"
+                        type="submit"
+                        disabled={busy}
+                    >
+                        {busy
+                            ? isLogin ? "Logging in…" : "Creating account…"
+                            : isLogin ? "Log in"      : "Create account"}
+                    </button>
+                </form>
+
+                {/* ── Switch mode link ── */}
+                <p className="auth-switch">
+                    {isLogin ? "Don't have an account? " : "Already have an account? "}
+                    <button
+                        type="button"
+                        className="auth-switch-btn"
+                        onClick={switchMode}
+                    >
+                        {isLogin ? "Sign up" : "Log in"}
+                    </button>
+                </p>
+            </div>
+        </div>
+    );
 }
