@@ -27,8 +27,8 @@ const register = async (req, res) => {
         },
     });
 
-    const token = generateToken(user.id,res);
-    
+    const token = generateToken(user.id, res);
+
     res.status(201).json({
         status: "success",
         data: {
@@ -37,6 +37,7 @@ const register = async (req, res) => {
                 name: name,
                 email: email,
             },
+            token,
         },
     });
 };
@@ -52,16 +53,16 @@ const login = async (req, res) => {
         return res.status(401).json({ error: "Invalid username or password" });
     }
 
-    const isPasswordValid = await bcrypt.compare(password,user.password);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
 
-    if(!isPasswordValid) {
-        return res.status(401).json({error: "Invalid username or password"})
+    if (!isPasswordValid) {
+        return res.status(401).json({ error: "Invalid username or password" })
     }
 
     // JWT 
-    const token = generateToken(user.id,res);
+    const token = generateToken(user.id, res);
 
-     res.status(201).json({
+    res.status(201).json({
         status: "success",
         data: {
             user: {
@@ -73,7 +74,7 @@ const login = async (req, res) => {
     });
 }
 
-const logout = async(req,res) => {
+const logout = async (req, res) => {
     res.cookie("jwt", "", {
         httpOnly: true,
         expires: new Date(0),
