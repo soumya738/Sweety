@@ -6,6 +6,7 @@ import {
     formatReading,
     computeStats,
     SLOT_ORDER,
+    parseTimezoneOffset,
 } from "../utils/reading.utils.js";
 import {
     firstOfMonth,
@@ -20,6 +21,12 @@ const getReport = async (req, res) => {
     try {
         const userId = req.user.id;
         const { type, date, month } = req.query;
+        const { offset, error: timezoneError } = parseTimezoneOffset(
+            req.get("X-Timezone-Offset")
+        );
+        if (timezoneError) {
+            return res.status(400).json({ error: timezoneError });
+        }
 
         // ── Validate type ──────────────────────────────────────────────────────
         const VALID_TYPES = ["daily", "mtd", "monthly"];
@@ -62,7 +69,7 @@ const getReport = async (req, res) => {
                 anchor = getTodayUTC();
             }
 
-            if (isFutureDate(anchor)) {
+            if (isFutureDate(anchor, offset)) {
                 return res.status(400).json({ error: "Date cannot be in the future." });
             }
 

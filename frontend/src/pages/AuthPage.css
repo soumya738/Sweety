@@ -1,15 +1,36 @@
 /* ── Page wrapper ──────────────────────────────────────────────────────────── */
 .auth-page {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     min-height: 100svh;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #fde8f0 0%, #f8f9fb 60%);
+    background: linear-gradient(135deg, #f8bfd2 0%, #fff7fa 48%, #fff 100%);
     padding: 24px 16px;
+}
+
+.auth-page::before {
+    position: absolute;
+    z-index: -1;
+    inset: -20%;
+    background:
+        radial-gradient(ellipse at 22% 30%, rgba(232, 93, 138, 0.15), transparent 38%),
+        radial-gradient(ellipse at 78% 72%, rgba(232, 93, 138, 0.07), transparent 36%);
+    content: "";
+    animation: auth-background-drift 24s ease-in-out infinite alternate;
+}
+
+@keyframes auth-background-drift {
+    from { transform: translate3d(-1%, -1%, 0) scale(1); }
+    to { transform: translate3d(1%, 1%, 0) scale(1.05); }
 }
 
 /* ── Card ──────────────────────────────────────────────────────────────────── */
 .auth-card {
+    position: relative;
+    z-index: 1;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -168,5 +189,11 @@
 @media (max-width: 480px) {
     .auth-card {
         padding: 28px 20px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .auth-page::before {
+        animation: none;
     }
 }

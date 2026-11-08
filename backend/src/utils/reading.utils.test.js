@@ -11,6 +11,7 @@ import {
   SLOT_ORDER,
   VALID_SLOTS,
   getTodayUTC,
+  parseTimezoneOffset,
 } from "./reading.utils.js";
 
 // Glucose validation
@@ -64,6 +65,27 @@ test("rejects future reading dates", () => {
   tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
 
   assert.equal(isFutureDate(tomorrow), true);
+});
+
+test("parses supported client timezone offsets", () => {
+  assert.deepEqual(parseTimezoneOffset(undefined), { offset: 0 });
+  assert.deepEqual(parseTimezoneOffset("330"), { offset: 330 });
+  assert.deepEqual(parseTimezoneOffset("-480"), { offset: -480 });
+});
+
+test("rejects invalid client timezone offsets", () => {
+  assert.ok(parseTimezoneOffset("abc").error);
+  assert.ok(parseTimezoneOffset("1.5").error);
+  assert.ok(parseTimezoneOffset("841").error);
+  assert.ok(parseTimezoneOffset("-841").error);
+});
+
+test("getTodayUTC preserves UTC midnight while supporting client offsets", () => {
+  const today = getTodayUTC(330);
+  assert.equal(today.getUTCHours(), 0);
+  assert.equal(today.getUTCMinutes(), 0);
+  assert.equal(today.getUTCSeconds(), 0);
+  assert.equal(today.getUTCMilliseconds(), 0);
 });
 
 // Slot validation and formatting

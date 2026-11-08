@@ -96,4 +96,50 @@ const me = async (req, res) => {
     });
 };
 
-export { register, login, logout, me };
+const updatePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body ?? {};
+        if (
+            typeof currentPassword !== "string" ||
+            typeof newPassword !== "string" ||
+            !currentPassword ||
+            !newPassword
+        ) {
+            return res.status(400).json({ error: "Current and new passwords are required." });
+        }
+
+        if (currentPassword === newPassword) {
+            return res.status(400).json({ error: "Your new password must be different from your current password." });
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { id: req.user.id },
+            select: { id: true, password: true },
+        });
+
+        if (!user) {
+            return res.status(401).json({ error: "Not authorized, user no longer exists." });
+        }
+
+        const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+        if (!isCurrentPasswordValid) {
+            return res.status(400).json({ error: "Current password is incorrect." });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { password: hashedPassword },
+        });
+
+        return res.status(200).json({
+            status: "success",
+            message: "Password updated successfully.",
+        });
+    } catch (error) {
+        console.error("updatePassword error:", error);
+        return res.status(500).json({ error: "Internal server error." });
+    }
+};
+
+export { register, login, logout, me, updatePassword };

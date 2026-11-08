@@ -57,14 +57,29 @@ export function parseDateParam(raw) {
   return { date };
 }
 
-export function getTodayUTC() {
-  const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
-  return today;
+export function getTodayUTC(offsetMinutes = 0) {
+  const localToday = new Date(Date.now() + offsetMinutes * 60_000)
+    .toISOString()
+    .slice(0, 10);
+  return new Date(`${localToday}T00:00:00.000Z`);
 }
 
-export function isFutureDate(date) {
-  return date > getTodayUTC();
+export function parseTimezoneOffset(raw) {
+  if (raw === undefined) return { offset: 0 };
+  if (typeof raw !== "string" || !/^-?\d+$/.test(raw)) {
+    return { error: "Timezone offset must be an integer number of minutes." };
+  }
+
+  const offset = Number(raw);
+  if (!Number.isSafeInteger(offset) || offset < -840 || offset > 840) {
+    return { error: "Timezone offset must be between -840 and 840 minutes." };
+  }
+
+  return { offset };
+}
+
+export function isFutureDate(date, offsetMinutes = 0) {
+  return date > getTodayUTC(offsetMinutes);
 }
 
 export function formatReading(reading) {
@@ -97,11 +112,12 @@ export const SLOT_START_HOUR = {
  * @param {string} readingDateStr  "YYYY-MM-DD"
  * @param {string} slot            e.g. "AFTERDINNER"
  */
-export function isSlotInFuture(readingDateStr, slot) {
-  const todayStr = new Date().toLocaleDateString("en-CA"); // "YYYY-MM-DD" local
+export function isSlotInFuture(readingDateStr, slot, offsetMinutes = 0) {
+  const localNow = new Date(Date.now() + offsetMinutes * 60_000);
+  const todayStr = localNow.toISOString().slice(0, 10);
   if (readingDateStr !== todayStr) return false;           // past date → always ok
 
-  const currentHour = new Date().getHours(); // local hour 0–23
+  const currentHour = localNow.getUTCHours(); // hour in the client's timezone
   return currentHour < SLOT_START_HOUR[slot];
 }
 

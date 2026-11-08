@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Plus, X } from "lucide-react";
 import Navbar from "../components/Navbar";
 import ReadingCard from "../components/ReadingCard";
@@ -29,9 +29,11 @@ export default function DashboardPage() {
     const { user } = useAuth();
     const firstName = user?.name?.split(" ")[0] ?? "";
     const [selectedDate, setSelectedDate] = useState(toDateStr(new Date()));
-    const [readings,     setReadings]     = useState([]);
+    const [readingsState, setReadingsState] = useState({ date: "", readings: [] });
     const [loadingData,  setLoadingData]  = useState(false);
     const [fetchError,   setFetchError]   = useState("");
+    const [deleteError,  setDeleteError]  = useState("");
+    const readingsRequestId = useRef(0);
 
     // Form state — null = hidden, "add" = add mode, { ...reading } = edit mode
     const [formMode,  setFormMode]  = useState(null);
@@ -44,15 +46,21 @@ export default function DashboardPage() {
 
     // ── Fetch readings ─────────────────────────────────────────────────────
     const fetchReadings = useCallback(async (date) => {
+        const requestId = ++readingsRequestId.current;
         setLoadingData(true);
         setFetchError("");
+        setReadingsState({ date, readings: [] });
         try {
             const res = await api.get(`/readings?date=${date}`);
-            setReadings(res.data.data.readings);
+            if (requestId === readingsRequestId.current) {
+                setReadingsState({ date, readings: res.data.data.readings });
+            }
         } catch {
-            setFetchError("Failed to load readings. Please refresh.");
+            if (requestId === readingsRequestId.current) {
+                setFetchError("Failed to load readings. Please refresh.");
+            }
         } finally {
-            setLoadingData(false);
+            if (requestId === readingsRequestId.current) setLoadingData(false);
         }
     }, []);
 
@@ -78,13 +86,18 @@ export default function DashboardPage() {
         setFormError("");
         try {
             const res = await api.post("/readings", data);
-            setReadings((prev) => {
+            setReadingsState((current) => {
+                if (current.date !== selectedDate) return current;
+                const prev = current.readings;
                 const next = [...prev, res.data.data.reading];
                 const ORDER = {
                     BEFOREBREAKFAST: 1, AFTERBREAKFAST: 2,
                     AFTERLUNCH: 3,      AFTERDINNER: 4,
                 };
-                return next.sort((a, b) => ORDER[a.slot] - ORDER[b.slot]);
+                return {
+                    ...current,
+                    readings: next.sort((a, b) => ORDER[a.slot] - ORDER[b.slot]),
+                };
             });
             setFormMode(null);
         } catch (err) {
@@ -100,9 +113,12 @@ export default function DashboardPage() {
         setFormError("");
         try {
             const res = await api.put(`/readings/${formMode.id}`, { value: data.value });
-            setReadings((prev) =>
-                prev.map((r) => r.id === formMode.id ? res.data.data.reading : r)
-            );
+            setReadingsState((current) => ({
+                ...current,
+                readings: current.readings.map((r) =>
+                    r.id === formMode.id ? res.data.data.reading : r
+                ),
+            }));
             setFormMode(null);
         } catch (err) {
             setFormError(err?.response?.data?.error || "Failed to update reading.");
@@ -120,18 +136,24 @@ export default function DashboardPage() {
         const id = confirmDelete.id;
         setConfirmDelete(null);
         setDeletingId(id);
+        setDeleteError("");
         try {
             await api.delete(`/readings/${id}`);
-            setReadings((prev) => prev.filter((r) => r.id !== id));
+            setReadingsState((current) => ({
+                ...current,
+                readings: current.readings.filter((r) => r.id !== id),
+            }));
             if (formMode?.id === id) setFormMode(null);
-        } catch {
-            // surface error in a future toast; for now silently log
-            console.error("Delete failed");
+        } catch (error) {
+            setDeleteError(
+                error?.response?.data?.error || "Failed to delete reading. Please try again."
+            );
         } finally {
             setDeletingId(null);
         }
     }
 
+    const readings = readingsState.date === selectedDate ? readingsState.readings : [];
     const takenSlots = readings.map((r) => r.slot);
     const canAddMore = readings.length < 4;
     const isFuture   = selectedDate > toDateStr(new Date());
@@ -219,6 +241,10 @@ export default function DashboardPage() {
                             </button>
                         )}
                     </div>
+
+                    {deleteError && (
+                        <p className="readings-error" role="alert">{deleteError}</p>
+                    )}
 
                     {/* Add form */}
                     {formMode === "add" && (

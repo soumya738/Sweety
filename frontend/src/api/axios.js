@@ -19,4 +19,9 @@ const api = axios.create({
     },
 });
 
+api.interceptors.request.use((config) => {
+    config.headers.set("X-Timezone-Offset", String(-new Date().getTimezoneOffset()));
+    return config;
+});
+
 export default api;

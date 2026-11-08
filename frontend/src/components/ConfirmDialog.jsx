@@ -25,17 +25,47 @@ export default function ConfirmDialog({
     onCancel,
 }) {
     const cancelRef = useRef(null);
+    const panelRef = useRef(null);
 
-    // Focus the cancel button when opened (safer default)
+    // Keep keyboard focus in the modal and return it to the invoking control.
     useEffect(() => {
-        if (isOpen) cancelRef.current?.focus();
+        if (!isOpen) return;
+        const previousFocus = document.activeElement;
+        cancelRef.current?.focus();
+        return () => {
+            if (previousFocus instanceof HTMLElement && previousFocus.isConnected) {
+                previousFocus.focus();
+            }
+        };
     }, [isOpen]);
 
-    // Close on Escape
+    // Close on Escape and trap Tab navigation inside the modal.
     useEffect(() => {
         if (!isOpen) return;
         function onKey(e) {
-            if (e.key === "Escape") onCancel();
+            if (e.key === "Escape") {
+                onCancel();
+                return;
+            }
+            if (e.key !== "Tab") return;
+
+            const focusable = panelRef.current?.querySelectorAll(
+                'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'
+            );
+            if (!focusable?.length) return;
+
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (!panelRef.current.contains(document.activeElement)) {
+                e.preventDefault();
+                (e.shiftKey ? last : first).focus();
+            } else if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
         }
         window.addEventListener("keydown", onKey);
         return () => window.removeEventListener("keydown", onKey);
@@ -52,6 +82,7 @@ export default function ConfirmDialog({
         >
             {/* Panel — stop clicks propagating to backdrop */}
             <div
+                ref={panelRef}
                 className={`dialog-panel dialog-${variant}`}
                 role="alertdialog"
                 aria-modal="true"

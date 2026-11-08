@@ -3,7 +3,7 @@
     min-height: 100svh;
     display: flex;
     flex-direction: column;
-    background: var(--bg);
+    background: linear-gradient(135deg, #f8bfd2 0%, #fff7fa 48%, #fff 100%);
 }
 
 .dashboard-main {

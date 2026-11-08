@@ -12,6 +12,8 @@ import {
   formatReading,
   isUniqueConstraintError,
   isSlotInFuture,
+  parseTimezoneOffset,
+  getTodayUTC,
 } from "../utils/reading.utils.js";
 
 const READING_SELECT = {
@@ -43,6 +45,10 @@ const addToReadings = async (req, res) => {
   try {
     const { value, readingDate, slot } = req.body ?? {};
     const userId = req.user.id;
+    const { offset, error: timezoneError } = parseTimezoneOffset(
+      req.get("X-Timezone-Offset")
+    );
+    if (timezoneError) return errorResponse(res, 400, timezoneError);
 
     const valueError = validateValue(value);
     if (valueError) return errorResponse(res, 400, valueError);
@@ -54,12 +60,12 @@ const addToReadings = async (req, res) => {
     const { date, error } = parseDateParam(readingDate);
     if (error) return errorResponse(res, 400, error);
 
-    if (isFutureDate(date)) {
+    if (isFutureDate(date, offset)) {
       return errorResponse(res, 400, "Date cannot be in the future.");
     }
 
     // Block future slots on today's date (e.g. After dinner at 1pm)
-    if (isSlotInFuture(readingDate, slot)) {
+    if (isSlotInFuture(readingDate, slot, offset)) {
       return errorResponse(
         res,
         400,
@@ -123,6 +129,10 @@ const addToReadings = async (req, res) => {
 const getReadings = async (req, res) => {
   try {
     const userId = req.user.id;
+    const { offset, error: timezoneError } = parseTimezoneOffset(
+      req.get("X-Timezone-Offset")
+    );
+    if (timezoneError) return errorResponse(res, 400, timezoneError);
 
     const dateParam = req.query.date;
     let targetDate;
@@ -132,8 +142,7 @@ const getReadings = async (req, res) => {
       if (error) return errorResponse(res, 400, error);
       targetDate = date;
     } else {
-      targetDate = new Date();
-      targetDate.setUTCHours(0, 0, 0, 0);
+      targetDate = getTodayUTC(offset);
     }
 
     const readings = await prisma.reading.findMany({

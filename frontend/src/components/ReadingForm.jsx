@@ -107,23 +107,24 @@ export default function ReadingForm({
 
             {/* Date (informational, always the selected dashboard date) */}
             <div className="rf-field">
-                <label>Date</label>
-                <input type="text" value={date} readOnly className="rf-readonly" />
+                <label htmlFor="rf-date">Date</label>
+                <input id="rf-date" type="text" value={date} readOnly className="rf-readonly" />
             </div>
 
             {/* Slot selector */}
             <div className="rf-field">
-                <label htmlFor="rf-slot">Time slot</label>
+                <span id="rf-slot-label">Time slot</span>
                 {isEdit ? (
                     /* In edit mode the slot is fixed — only value can change */
                     <input
+                        id="rf-slot"
                         type="text"
                         value={SLOTS.find((s) => s.value === slot)?.label ?? slot}
                         readOnly
                         className="rf-readonly"
                     />
                 ) : (
-                    <div className="rf-slot-grid">
+                    <div className="rf-slot-grid" role="group" aria-labelledby="rf-slot-label">
                         {availableSlots.map((s) => {
                             const isFuture = isSlotFuture(date, s.value);
                             return (
@@ -137,6 +138,7 @@ export default function ReadingForm({
                                     }
                                     onClick={() => !isFuture && setSlot(s.value)}
                                     disabled={isFuture}
+                                    aria-pressed={slot === s.value}
                                     title={isFuture ? "This slot is not available yet" : undefined}
                                 >
                                     {s.label}

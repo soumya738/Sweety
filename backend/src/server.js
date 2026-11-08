@@ -9,7 +9,7 @@ import registerRoute from "./routes/authRoutes.js";
 import reportRoute from "./routes/reportRoutes.js";
 
 config();
-connectDB();
+await connectDB();
 
 const app = express();
 

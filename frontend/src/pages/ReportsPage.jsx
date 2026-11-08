@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import StatsCard from "../components/StatsCard";
 import DatePicker from "../components/DatePicker";
@@ -21,13 +21,6 @@ function formatDisplayDate(dateStr) {
     const [y, m, d] = dateStr.split("-").map(Number);
     return new Date(y, m - 1, d).toLocaleDateString("en-GB", {
         day: "numeric", month: "short", year: "numeric",
-    });
-}
-
-function formatDisplayMonth(monthStr) {
-    const [y, m] = monthStr.split("-").map(Number);
-    return new Date(y, m - 1, 1).toLocaleDateString("en-GB", {
-        month: "long", year: "numeric",
     });
 }
 
@@ -56,6 +49,7 @@ export default function ReportsPage() {
     const [report,       setReport]       = useState(null);
     const [loading,      setLoading]      = useState(false);
     const [error,        setError]        = useState("");
+    const reportRequestId = useRef(0);
 
     // Daily / MTD use a date picker
     const [selectedDate,  setSelectedDate]  = useState(toDateStr(new Date()));
@@ -64,6 +58,7 @@ export default function ReportsPage() {
 
     // ── Fetch report ─────────────────────────────────────────────────────────
     const fetchReport = useCallback(async (tab, date, month) => {
+        const requestId = ++reportRequestId.current;
         setLoading(true);
         setError("");
         setReport(null);
@@ -75,13 +70,15 @@ export default function ReportsPage() {
                 url = `/report?type=${tab}&date=${date}`;
             }
             const res = await api.get(url);
-            setReport(res.data.data);
+            if (requestId === reportRequestId.current) setReport(res.data.data);
         } catch (err) {
-            setError(
-                err?.response?.data?.error || "Failed to load report. Please try again."
-            );
+            if (requestId === reportRequestId.current) {
+                setError(
+                    err?.response?.data?.error || "Failed to load report. Please try again."
+                );
+            }
         } finally {
-            setLoading(false);
+            if (requestId === reportRequestId.current) setLoading(false);
         }
     }, []);
 

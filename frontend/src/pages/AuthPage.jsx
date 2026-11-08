@@ -43,18 +43,31 @@ export default function AuthPage() {
     async function handleSubmit(e) {
         e.preventDefault();
         setError("");
+
+        if (!email.trim()) {
+            setError("Please enter your email address.");
+            return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+            setError("Please enter a valid email address.");
+            return;
+        }
+        if (!password) {
+            setError("Please enter your password.");
+            return;
+        }
+        if (!isLogin && name.trim().length < 2) {
+            setError("Name must be at least 2 characters.");
+            return;
+        }
+
         setBusy(true);
 
         try {
             if (isLogin) {
-                await login(email, password);
+                await login(email.trim(), password);
             } else {
-                if (name.trim().length < 2) {
-                    setError("Name must be at least 2 characters.");
-                    setBusy(false);
-                    return;
-                }
-                await register(name.trim(), email, password);
+                await register(name.trim(), email.trim(), password);
             }
             // AuthContext sets welcome state → AppShell renders WelcomeScreen
             // WelcomeScreen onDismiss → dismissWelcome() → normal routing resumes

@@ -36,10 +36,10 @@
     color: var(--text-muted);
 }
 
-/* Accent colours per stat type */
-.highlight-high { border-top: 3px solid var(--danger); }
-.highlight-low  { border-top: 3px solid var(--success); }
-.highlight-avg  { border-top: 3px solid var(--accent); }
+/* Neutral brand accents avoid implying that a value is medically good or bad. */
+.highlight-high,
+.highlight-low,
+.highlight-avg { border-top: 3px solid var(--accent); }
 
 /* 2×2 on mobile */
 @media (max-width: 480px) {
