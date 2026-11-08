@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
 import "./DatePicker.css";
 
-/* ── helpers ──────────────────────────────────────────────────────────────── */
 const MONTHS = [
     "January","February","March","April","May","June",
     "July","August","September","October","November","December",
@@ -21,20 +20,10 @@ function firstWeekday(year, month) {
     return new Date(year, month, 1).getDay();
 }
 
-/**
- * Fully themed date picker.
- *
- * Props:
- *   value    – "YYYY-MM-DD" string
- *   max      – "YYYY-MM-DD" string (optional, blocks future dates)
- *   onChange – called with "YYYY-MM-DD"
- *   label    – visible label above the trigger button
- */
 export default function DatePicker({ value, max, onChange, label }) {
     const [open, setOpen] = useState(false);
     const ref             = useRef(null);
 
-    // Controlled view state
     const [viewYear,  setViewYear]  = useState(() => {
         const d = value ? new Date(value + "T00:00:00") : new Date();
         return d.getFullYear();
@@ -44,11 +33,9 @@ export default function DatePicker({ value, max, onChange, label }) {
         return d.getMonth();
     });
 
-    // Parse selected date
     const selDate = value ? new Date(value + "T00:00:00") : null;
     const maxDate = max   ? new Date(max   + "T00:00:00") : null;
 
-    // Close on outside click
     useEffect(() => {
         if (!open) return;
         function handler(e) {
@@ -58,7 +45,6 @@ export default function DatePicker({ value, max, onChange, label }) {
         return () => document.removeEventListener("mousedown", handler);
     }, [open]);
 
-    // Close on Escape
     useEffect(() => {
         if (!open) return;
         function handler(e) { if (e.key === "Escape") setOpen(false); }
@@ -83,7 +69,6 @@ export default function DatePicker({ value, max, onChange, label }) {
         setOpen(false);
     }
 
-    // Display label on the trigger
     function formatTrigger() {
         if (!selDate) return "Pick a date";
         return selDate.toLocaleDateString("en-GB", {
@@ -99,7 +84,6 @@ export default function DatePicker({ value, max, onChange, label }) {
         <div className="dp-wrapper" ref={ref}>
             {label && <span className="dp-label">{label}</span>}
 
-            {/* Trigger */}
             <button
                 type="button"
                 className="dp-trigger"
@@ -111,10 +95,8 @@ export default function DatePicker({ value, max, onChange, label }) {
                 {formatTrigger()}
             </button>
 
-            {/* Calendar popover */}
             {open && (
                 <div className="dp-popover" role="dialog" aria-label="Date picker">
-                    {/* Month/year header */}
                     <div className="dp-header">
                         <button
                             type="button"
@@ -137,18 +119,15 @@ export default function DatePicker({ value, max, onChange, label }) {
                         </button>
                     </div>
 
-                    {/* Day-of-week headers */}
                     <div className="dp-grid">
                         {DAYS.map(d => (
                             <span key={d} className="dp-dow">{d}</span>
                         ))}
 
-                        {/* Empty cells before first day */}
                         {Array.from({ length: startDay }).map((_, i) => (
                             <span key={`e-${i}`} />
                         ))}
 
-                        {/* Day cells */}
                         {Array.from({ length: totalDays }, (_, i) => i + 1).map(day => {
                             const d        = new Date(viewYear, viewMonth, day);
                             const dStr     = toDateStr(d);
@@ -177,7 +156,6 @@ export default function DatePicker({ value, max, onChange, label }) {
                         })}
                     </div>
 
-                    {/* Today shortcut */}
                     {value !== todayStr && (
                         <button
                             type="button"

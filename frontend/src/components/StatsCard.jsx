@@ -1,9 +1,5 @@
 import "./StatsCard.css";
 
-/**
- * Displays the 4 summary stats: count, highest, lowest, average.
- * When stats are null (no readings) it shows "—" instead of numbers.
- */
 export default function StatsCard({ stats }) {
     const isEmpty = !stats || stats.count === 0;
 

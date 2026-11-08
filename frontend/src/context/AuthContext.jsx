@@ -3,9 +3,6 @@ import api from "../api/axios";
 
 const AuthContext = createContext(null);
 
-// ── localStorage cache ────────────────────────────────────────────────────────
-// Stores { id, name, email } so the greeting is available on the very first
-// render without waiting for the /auth/me network call.
 const CACHE_KEY = "sweety_user";
 
 function readCache() {
@@ -19,11 +16,9 @@ function writeCache(u) {
 }
 
 export function AuthProvider({ children }) {
-    // Seed state from cache synchronously — no flicker on first render
     const [user,    setUser]    = useState(() => readCache());
     const [loading, setLoading] = useState(true);
 
-    // Verify session on mount. Clears cache if cookie is gone.
     useEffect(() => {
         api.get("/auth/me")
             .then((res) => {

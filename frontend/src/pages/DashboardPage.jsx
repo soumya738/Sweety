@@ -8,7 +8,6 @@ import { useAuth } from "../context/AuthContext";
 import api from "../api/axios";
 import "./DashboardPage.css";
 
-/* ── helpers ─────────────────────────────────────────────────────────────────── */
 function toDateStr(date) {
     return date.toLocaleDateString("en-CA"); // "YYYY-MM-DD" in local time
 }
@@ -24,7 +23,6 @@ function isToday(dateStr) {
     return dateStr === toDateStr(new Date());
 }
 
-/* ── component ────────────────────────────────────────────────────────────────── */
 export default function DashboardPage() {
     const { user } = useAuth();
     const firstName = user?.name?.split(" ")[0] ?? "";
@@ -40,11 +38,9 @@ export default function DashboardPage() {
     const [formBusy,  setFormBusy]  = useState(false);
     const [formError, setFormError] = useState("");
 
-    // Delete confirmation dialog
     const [confirmDelete, setConfirmDelete] = useState(null); // null | { id, slotDisplay }
     const [deletingId,    setDeletingId]    = useState(null);
 
-    // ── Fetch readings ─────────────────────────────────────────────────────
     const fetchReadings = useCallback(async (date) => {
         const requestId = ++readingsRequestId.current;
         setLoadingData(true);
@@ -70,7 +66,6 @@ export default function DashboardPage() {
         setFormError("");
     }, [selectedDate, fetchReadings]);
 
-    // ── Date navigation ────────────────────────────────────────────────────
     function shiftDate(days) {
         const [y, m, d] = selectedDate.split("-").map(Number);
         const next = new Date(y, m - 1, d + days);
@@ -80,7 +75,6 @@ export default function DashboardPage() {
 
     function goToday() { setSelectedDate(toDateStr(new Date())); }
 
-    // ── Add reading ────────────────────────────────────────────────────────
     async function handleAdd(data) {
         setFormBusy(true);
         setFormError("");
@@ -107,7 +101,6 @@ export default function DashboardPage() {
         }
     }
 
-    // ── Edit reading ───────────────────────────────────────────────────────
     async function handleEdit(data) {
         setFormBusy(true);
         setFormError("");
@@ -127,7 +120,6 @@ export default function DashboardPage() {
         }
     }
 
-    // ── Delete reading — open dialog ───────────────────────────────────────
     function requestDelete(reading) {
         setConfirmDelete({ id: reading.id, slotDisplay: reading.slotDisplay });
     }
@@ -162,7 +154,6 @@ export default function DashboardPage() {
         <div className="dashboard-layout">
             <Navbar />
 
-            {/* ── Delete confirmation dialog ── */}
             <ConfirmDialog
                 isOpen={Boolean(confirmDelete)}
                 title="Delete reading?"
@@ -179,7 +170,6 @@ export default function DashboardPage() {
             />
 
             <main className="dashboard-main">
-                {/* ── Greeting banner ── */}
                 <section className="greeting-banner">
                     <div className="greeting-text">
                         <h1 className="greeting-heading">
@@ -192,7 +182,6 @@ export default function DashboardPage() {
                     <span className="greeting-emoji" aria-hidden="true">🩸</span>
                 </section>
 
-                {/* ── Date navigator ── */}
                 <section className="date-nav card">
                     <button
                         className="date-nav-btn"
@@ -223,7 +212,6 @@ export default function DashboardPage() {
                     </button>
                 </section>
 
-                {/* ── Readings list ── */}
                 <section className="readings-section card">
                     <div className="readings-header">
                         <h2 className="readings-title">
@@ -246,7 +234,6 @@ export default function DashboardPage() {
                         <p className="readings-error" role="alert">{deleteError}</p>
                     )}
 
-                    {/* Add form */}
                     {formMode === "add" && (
                         <div className="form-panel">
                             <button

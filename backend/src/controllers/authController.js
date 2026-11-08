@@ -13,11 +13,8 @@ const register = async (req, res) => {
         return res.status(400).json({ error: "User already exists with this email" });
     }
 
-    //Hash password
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(password, salt);
-
-    // adding user to table
 
     const user = await prisma.user.create({
         data: {
@@ -59,7 +56,6 @@ const login = async (req, res) => {
         return res.status(401).json({ error: "Invalid username or password" })
     }
 
-    // JWT 
     const token = generateToken(user.id, res);
 
     res.status(201).json({
@@ -86,10 +82,7 @@ const logout = async (req, res) => {
     });
 };
 
-// GET /auth/me — returns the current user from the JWT cookie
-// Used by the frontend to restore session on page refresh
 const me = async (req, res) => {
-    // req.user is attached by the protect middleware
     res.status(200).json({
         status: "success",
         data: { user: req.user },

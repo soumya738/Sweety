@@ -18,6 +18,4 @@ const disconnectDB = async () => {
     await prisma.$disconnect();
 };
 
-await {prisma, connectDB, disconnectDB};
-
 export {prisma, connectDB, disconnectDB}

@@ -26,18 +26,6 @@ function isSlotFuture(dateStr, slotValue) {
     return new Date().getHours() < SLOT_START_HOUR[slotValue];
 }
 
-/**
- * Shared form used for both adding and editing a reading.
- *
- * Props:
- *   date          – "YYYY-MM-DD" string, pre-filled and readonly when adding
- *   takenSlots    – string[], slots already used on this date (for add mode)
- *   initial       – { value, slot } when editing; undefined when adding
- *   onSubmit(data)– called with { value: number, readingDate, slot }
- *   onCancel()    – called when user dismisses the form
- *   busy          – disables submit while request is in flight
- *   error         – server-side error string to display
- */
 export default function ReadingForm({
     date,
     takenSlots = [],
@@ -59,7 +47,6 @@ export default function ReadingForm({
         setSlot(initial?.slot ?? "");
     }, [initial]);
 
-    // ── Client-side validation ─────────────────────────────────────────────
     const [localError, setLocalError] = useState("");
 
     function validate() {
@@ -105,17 +92,14 @@ export default function ReadingForm({
                 {isEdit ? "Edit reading" : "Add reading"}
             </h3>
 
-            {/* Date (informational, always the selected dashboard date) */}
             <div className="rf-field">
                 <label htmlFor="rf-date">Date</label>
                 <input id="rf-date" type="text" value={date} readOnly className="rf-readonly" />
             </div>
 
-            {/* Slot selector */}
             <div className="rf-field">
                 <span id="rf-slot-label">Time slot</span>
                 {isEdit ? (
-                    /* In edit mode the slot is fixed — only value can change */
                     <input
                         id="rf-slot"
                         type="text"
@@ -157,7 +141,6 @@ export default function ReadingForm({
                 )}
             </div>
 
-            {/* Value input */}
             <div className="rf-field">
                 <label htmlFor="rf-value">
                     Glucose value <span className="rf-unit">(mg/dL)</span>
@@ -174,12 +157,10 @@ export default function ReadingForm({
                 />
             </div>
 
-            {/* Error */}
             {displayError && (
                 <p className="rf-error" role="alert">{displayError}</p>
             )}
 
-            {/* Actions */}
             <div className="rf-actions">
                 <button
                     type="button"

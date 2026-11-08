@@ -3,7 +3,6 @@ import cookieParser from "cookie-parser";
 import { config } from "dotenv";
 import {connectDB,disconnectDB} from "./config/db.js";
 
-//Import Routes
 import readingsroute from "./routes/readingsRoutes.js";
 import registerRoute from "./routes/authRoutes.js";
 import reportRoute from "./routes/reportRoutes.js";
@@ -17,7 +16,6 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
 
-//API Routes
 app.use("/readings", readingsroute)
 app.use("/auth", registerRoute)
 app.use("/report", reportRoute)

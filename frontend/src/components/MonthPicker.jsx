@@ -1,21 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
-import "./DatePicker.css"; // shares the same stylesheet
+import "./DatePicker.css";
 
 const MONTHS_SHORT = [
     "Jan","Feb","Mar","Apr","May","Jun",
     "Jul","Aug","Sep","Oct","Nov","Dec",
 ];
 
-/**
- * Themed month picker — shows a 3×4 month grid.
- *
- * Props:
- *   value    – "YYYY-MM" string
- *   max      – "YYYY-MM" string (optional, blocks future months)
- *   onChange – called with "YYYY-MM"
- *   label    – visible label above the trigger
- */
 export default function MonthPicker({ value, max, onChange, label }) {
     const [open, setOpen] = useState(false);
     const ref             = useRef(null);
@@ -24,12 +15,10 @@ export default function MonthPicker({ value, max, onChange, label }) {
         value ? Number(value.split("-")[0]) : new Date().getFullYear()
     );
 
-    // Parse max
     const [maxY, maxM] = max
         ? max.split("-").map(Number)
         : [9999, 11];
 
-    // Close on outside click
     useEffect(() => {
         if (!open) return;
         function handler(e) {
@@ -88,7 +77,6 @@ export default function MonthPicker({ value, max, onChange, label }) {
 
             {open && (
                 <div className="dp-popover dp-month-popover" role="dialog" aria-label="Month picker">
-                    {/* Year navigation */}
                     <div className="dp-header">
                         <button
                             type="button"
@@ -110,7 +98,6 @@ export default function MonthPicker({ value, max, onChange, label }) {
                         </button>
                     </div>
 
-                    {/* Month grid */}
                     <div className="dp-month-grid">
                         {MONTHS_SHORT.map((name, i) => {
                             const blocked  = isBlocked(i);

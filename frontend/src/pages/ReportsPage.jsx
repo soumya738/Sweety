@@ -6,14 +6,11 @@ import MonthPicker from "../components/MonthPicker";
 import api from "../api/axios";
 import "./ReportsPage.css";
 
-// ── helpers ────────────────────────────────────────────────────────────────────
-
 function toDateStr(d) {
     return d.toLocaleDateString("en-CA"); // "YYYY-MM-DD" local
 }
 
 function toMonthStr(d) {
-    // "YYYY-MM"
     return d.toLocaleDateString("en-CA").slice(0, 7);
 }
 
@@ -36,8 +33,6 @@ const SLOT_COLORS = {
     AFTERDINNER:     "slot-4",
 };
 
-// ── component ──────────────────────────────────────────────────────────────────
-
 const TABS = [
     { key: "daily",   label: "Daily"         },
     { key: "mtd",     label: "Month-to-date" },
@@ -51,12 +46,9 @@ export default function ReportsPage() {
     const [error,        setError]        = useState("");
     const reportRequestId = useRef(0);
 
-    // Daily / MTD use a date picker
     const [selectedDate,  setSelectedDate]  = useState(toDateStr(new Date()));
-    // Monthly uses a month picker
     const [selectedMonth, setSelectedMonth] = useState(toMonthStr(new Date()));
 
-    // ── Fetch report ─────────────────────────────────────────────────────────
     const fetchReport = useCallback(async (tab, date, month) => {
         const requestId = ++reportRequestId.current;
         setLoading(true);
@@ -82,7 +74,6 @@ export default function ReportsPage() {
         }
     }, []);
 
-    // Re-fetch whenever tab or date/month changes
     useEffect(() => {
         fetchReport(activeTab, selectedDate, selectedMonth);
     }, [activeTab, selectedDate, selectedMonth, fetchReport]);
@@ -100,7 +91,6 @@ export default function ReportsPage() {
             <Navbar />
 
             <main className="reports-main">
-                {/* ── Page description banner ── */}
                 <section className="reports-banner">
                     <div className="reports-banner-text">
                         <h1 className="reports-banner-heading">📊 Reports</h1>
@@ -114,7 +104,6 @@ export default function ReportsPage() {
                     </div>
                 </section>
 
-                {/* ── Tab bar ── */}
                 <div className="reports-tabs" role="tablist">
                     {TABS.map((t) => (
                         <button
@@ -129,7 +118,6 @@ export default function ReportsPage() {
                     ))}
                 </div>
 
-                {/* ── Filters ── */}
                 <div className="reports-filter card">
                     {activeTab === "monthly" ? (
                         <MonthPicker
@@ -147,7 +135,6 @@ export default function ReportsPage() {
                         />
                     )}
 
-                    {/* Show resolved date range once loaded */}
                     {report && (
                         <p className="filter-range">
                             {formatDateRange(report.dateRange.from, report.dateRange.to)}
@@ -155,24 +142,20 @@ export default function ReportsPage() {
                     )}
                 </div>
 
-                {/* ── Loading ── */}
                 {loading && (
                     <div className="reports-loading card">
                         Loading report…
                     </div>
                 )}
 
-                {/* ── Error ── */}
                 {error && (
                     <div className="reports-error card" role="alert">
                         {error}
                     </div>
                 )}
 
-                {/* ── Report content ── */}
                 {report && !loading && (
                     <>
-                        {/* Stats */}
                         <section className="card">
                             <h2 className="section-title">Summary</h2>
                             {isEmpty ? (
@@ -188,7 +171,6 @@ export default function ReportsPage() {
                             )}
                         </section>
 
-                        {/* Daily reading list */}
                         {activeTab === "daily" && !isEmpty && (
                             <section className="card">
                                 <h2 className="section-title">

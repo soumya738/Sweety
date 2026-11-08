@@ -1,19 +1,6 @@
 import { useEffect, useRef } from "react";
 import "./ConfirmDialog.css";
 
-/**
- * Themed modal confirmation dialog — replaces window.confirm().
- *
- * Props:
- *   isOpen        – boolean, controls visibility
- *   title         – dialog heading
- *   message       – body text
- *   confirmLabel  – label for the confirm button (default "Confirm")
- *   cancelLabel   – label for the cancel button (default "Cancel")
- *   variant       – "danger" | "warning" | "default" (default "default")
- *   onConfirm()   – called when user confirms
- *   onCancel()    – called when user cancels or presses Escape
- */
 export default function ConfirmDialog({
     isOpen,
     title,
@@ -74,13 +61,11 @@ export default function ConfirmDialog({
     if (!isOpen) return null;
 
     return (
-        /* Backdrop */
         <div
             className="dialog-backdrop"
             onClick={onCancel}
             role="presentation"
         >
-            {/* Panel — stop clicks propagating to backdrop */}
             <div
                 ref={panelRef}
                 className={`dialog-panel dialog-${variant}`}

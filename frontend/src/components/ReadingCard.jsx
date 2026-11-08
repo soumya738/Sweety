@@ -8,15 +8,6 @@ const SLOT_COLORS = {
     AFTERDINNER:     "slot-4",
 };
 
-/**
- * Displays a single reading row with edit and delete actions.
- *
- * Props:
- *   reading   – { id, slot, slotDisplay, value }
- *   onEdit()  – called when user clicks the edit button
- *   onDelete()– called when user clicks the delete button
- *   deleting  – true while delete request is in flight
- */
 export default function ReadingCard({ reading, onEdit, onDelete, deleting }) {
     const colorClass = SLOT_COLORS[reading.slot] ?? "slot-1";
 

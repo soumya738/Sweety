@@ -16,7 +16,6 @@ import {
     resolveDateRange,
 } from "../utils/report.utils.js";
 
-// ─── GET /report ──────────────────────────────────────────────────────────────
 const getReport = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -28,7 +27,6 @@ const getReport = async (req, res) => {
             return res.status(400).json({ error: timezoneError });
         }
 
-        // ── Validate type ──────────────────────────────────────────────────────
         const VALID_TYPES = ["daily", "mtd", "monthly"];
         if (!type || !VALID_TYPES.includes(type)) {
             return res.status(400).json({
@@ -38,7 +36,6 @@ const getReport = async (req, res) => {
 
         let from, to;
 
-        // ── monthly: uses ?month=YYYY-MM ───────────────────────────────────────
         if (type === "monthly") {
             let year, monthIndex;
 
@@ -57,7 +54,6 @@ const getReport = async (req, res) => {
             from = new Date(Date.UTC(year, monthIndex, 1));
             to   = lastOfMonth(from);
 
-        // ── daily & mtd: use ?date=YYYY-MM-DD ─────────────────────────────────
         } else {
             let anchor;
 
@@ -77,13 +73,11 @@ const getReport = async (req, res) => {
                 from = anchor;
                 to   = anchor;
             } else {
-                // mtd: 1st of month → selected date
                 from = firstOfMonth(anchor);
                 to   = anchor;
             }
         }
 
-        // ── Fetch readings ─────────────────────────────────────────────────────
         const rawReadings = await prisma.reading.findMany({
             where: {
                 userId,
@@ -98,7 +92,6 @@ const getReport = async (req, res) => {
             },
         });
 
-        // Sort by date then by slot meal-order
         rawReadings.sort((a, b) => {
             const dateDiff = new Date(a.readingDate) - new Date(b.readingDate);
             if (dateDiff !== 0) return dateDiff;
@@ -107,7 +100,6 @@ const getReport = async (req, res) => {
 
         const stats = computeStats(rawReadings);
 
-        // Daily includes the full reading list; mtd and monthly return stats only
         const readings =
             type === "daily" ? rawReadings.map(formatReading) : undefined;
 

@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import "./AuthPage.css";
 
-/* ── small reusable field ──────────────────────────────────────────────────── */
 function Field({ label, id, type = "text", value, onChange, autoComplete }) {
     return (
         <div className="auth-field">
@@ -19,7 +18,6 @@ function Field({ label, id, type = "text", value, onChange, autoComplete }) {
     );
 }
 
-/* ── main page ─────────────────────────────────────────────────────────────── */
 export default function AuthPage() {
     const { login, register } = useAuth();
 
@@ -69,8 +67,6 @@ export default function AuthPage() {
             } else {
                 await register(name.trim(), email.trim(), password);
             }
-            // AuthContext sets welcome state → AppShell renders WelcomeScreen
-            // WelcomeScreen onDismiss → dismissWelcome() → normal routing resumes
         } catch (err) {
             setError(
                 err?.response?.data?.error ||
@@ -85,14 +81,12 @@ export default function AuthPage() {
         <div className="auth-page">
             <div className="auth-card">
 
-                {/* Brand header */}
                 <div className="auth-brand">
                     <span className="auth-brand-icon">🩸</span>
                     <h1 className="auth-brand-name">Sweety</h1>
                     <p className="auth-brand-tagline">Blood Glucose Tracker</p>
                 </div>
 
-                {/* Mode toggle tabs */}
                 <div className="auth-tabs" role="tablist">
                     <button
                         role="tab"
@@ -114,7 +108,6 @@ export default function AuthPage() {
                     </button>
                 </div>
 
-                {/* Form */}
                 <form className="auth-form" onSubmit={handleSubmit} noValidate>
                     {!isLogin && (
                         <Field
@@ -159,7 +152,6 @@ export default function AuthPage() {
                     </button>
                 </form>
 
-                {/* Switch mode */}
                 <p className="auth-switch">
                     {isLogin ? "Don't have an account? " : "Already have an account? "}
                     <button

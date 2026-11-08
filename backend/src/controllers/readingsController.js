@@ -40,7 +40,6 @@ const serverError = (res, error, operation) => {
   return errorResponse(res, 500, "Internal server error.");
 };
 
-// POST /readings
 const addToReadings = async (req, res) => {
   try {
     const { value, readingDate, slot } = req.body ?? {};
@@ -125,7 +124,6 @@ const addToReadings = async (req, res) => {
   }
 };
 
-// GET /readings?date=YYYY-MM-DD
 const getReadings = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -169,7 +167,6 @@ const getReadings = async (req, res) => {
   }
 };
 
-// PUT /readings/:id
 const editReading = async (req, res) => {
   try {
     const { id } = req.params;
@@ -179,7 +176,6 @@ const editReading = async (req, res) => {
     const valueError = validateValue(value);
     if (valueError) return errorResponse(res, 400, valueError);
 
-    // Update only if the reading belongs to the authenticated user.
     const result = await prisma.reading.updateMany({
       where: { id, userId },
       data: { value: Number(value) },
@@ -203,13 +199,11 @@ const editReading = async (req, res) => {
   }
 };
 
-// DELETE /readings/:id
 const deleteReading = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
 
-    // Delete only if the reading belongs to the authenticated user.
     const result = await prisma.reading.deleteMany({
       where: { id, userId },
     });

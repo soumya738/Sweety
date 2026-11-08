@@ -3,17 +3,14 @@ import { prisma } from "../config/db.js";
 
 export const protect = async (req, res, next) => {
     try {
-        // Read token from httpOnly cookie (set by generateToken)
         const token = req.cookies?.jwt;
 
         if (!token) {
             return res.status(401).json({ error: "Not authorized, no token found" });
         }
 
-        // Verify token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        // Attach user to request (exclude password)
         const user = await prisma.user.findUnique({
             where: { id: decoded.id },
             select: { id: true, name: true, email: true },
